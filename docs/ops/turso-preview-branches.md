@@ -13,6 +13,32 @@ Two GitHub Actions workflows drive this; both **no-op with a clear log
 message** (they don't fail) when their required secrets aren't set yet, so
 they sit harmlessly unused until provisioned.
 
+### Keeping production backend-free
+
+ADR-0006/ADR-0007's invariant is that production has **no** backend reachable
+at all — not just "an unrouted or non-functional one." That ruled out the
+obvious approach of a global `[[redirects]]` rule plus a global
+`netlify/functions/` directory (what an earlier draft of this PR shipped):
+Netlify's own docs confirm `[functions]` (the Function directory) and
+`[[redirects]]` are **not** context-scoped keys in `netlify.toml` — only
+`[build]` properties (`command`, `publish`, `environment`, …) and env vars
+are. So `netlify.toml` enforces this the two ways that actually are
+context-aware:
+
+1. The default `[build].command` deletes `netlify/functions/` *before*
+   Netlify's function-bundling step runs, so by default no Function is
+   bundled or deployed anywhere, for any context. `[context.deploy-preview]`
+   overrides the command to leave the directory intact (so the Function
+   *is* bundled for PR previews) and to generate a `_redirects` file with
+   the `/api/*` rewrite — the per-deploy-artifact equivalent of
+   `[[redirects]]`, used here because that key can't be context-scoped
+   either.
+2. A second, independent runtime guard: `PREVIEW_API_ENABLED` is only set to
+   `"true"` via `[context.deploy-preview.environment]`.
+   `netlify/functions/api.ts` checks it and 404s otherwise, so even if (1)
+   is ever broken by a future edit, this file still refuses to serve
+   anything outside a deploy preview.
+
 ### `.github/workflows/turso-preview-branch.yml` — per-PR branch DB
 
 Triggers on `pull_request` events `opened`, `reopened`, `closed`:
@@ -114,3 +140,7 @@ with account access needs to do this and then smoke-test it.
    - Merge a change under `apps/server/drizzle/` to `master` and confirm
      `migrate-seed-db.yml` ran and succeeded, applying the new migration to
      the seed DB.
+   - Confirm production stays backend-free: after a production deploy, hit
+     `/api/health` and `/.netlify/functions/api/health` directly on the
+     production URL — both should 404 (no redirect exists, and no Function
+     is deployed there at all).
