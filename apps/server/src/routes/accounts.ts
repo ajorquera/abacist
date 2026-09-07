@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db/client.js";
 import { account, valueSnapshot } from "../db/schema.js";
+import { ACCOUNT_KINDS, isAccountKind } from "../domain/account-kind.js";
 import { BASE_CURRENCY } from "../domain/currency.js";
 
 export const accountsRoute = new Hono();
@@ -20,6 +21,9 @@ accountsRoute.post("/", async (c) => {
 
   if (typeof kind !== "string" || kind.trim() === "") {
     return c.json({ error: "kind is required" }, 400);
+  }
+  if (!isAccountKind(kind)) {
+    return c.json({ error: `kind must be one of: ${ACCOUNT_KINDS.join(", ")}` }, 400);
   }
   if (typeof name !== "string" || name.trim() === "") {
     return c.json({ error: "name is required" }, 400);

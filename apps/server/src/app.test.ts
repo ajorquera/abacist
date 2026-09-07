@@ -60,6 +60,13 @@ describe("POST /api/accounts", () => {
     const res = await createAccount({ name: "" });
     expect(res.status).toBe(400);
   });
+
+  it("rejects an unknown kind", async () => {
+    const res = await createAccount({ name: "Bogus", kind: "bogus_kind" });
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as ErrorResponse;
+    expect(body.error).toMatch(/kind/);
+  });
 });
 
 describe("GET /api/accounts", () => {

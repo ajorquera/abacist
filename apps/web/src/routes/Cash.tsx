@@ -12,6 +12,14 @@ type Account = {
 
 type SnapshotDraft = { amount: string; date: string };
 
+async function errorMessage(res: Response, fallback: string): Promise<string> {
+  try {
+    return (await res.json()).error ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export function Cash() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [name, setName] = useState("");
@@ -46,7 +54,7 @@ export function Cash() {
       }),
     });
     if (!res.ok) {
-      setError((await res.json()).error ?? "Failed to create account");
+      setError(await errorMessage(res, "Failed to create account"));
       return;
     }
     setName("");
@@ -64,7 +72,7 @@ export function Cash() {
       body: JSON.stringify({ amount: Number(draft.amount), currency: BASE_CURRENCY, date: draft.date }),
     });
     if (!res.ok) {
-      setError((await res.json()).error ?? "Failed to record value");
+      setError(await errorMessage(res, "Failed to record value"));
       return;
     }
     setDrafts((prev) => ({ ...prev, [accountId]: { amount: "", date: "" } }));

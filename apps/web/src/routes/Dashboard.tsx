@@ -4,22 +4,25 @@ type NetWorth = { currency: string; netWorth: number };
 
 export function Dashboard() {
   const [netWorth, setNetWorth] = useState<NetWorth | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/dashboard/net-worth")
       .then((res) => res.json())
-      .then(setNetWorth);
+      .then(setNetWorth)
+      .catch(() => setError("Failed to load net worth"));
   }, []);
 
   return (
     <div>
       <h1>Dashboard</h1>
+      {error && <p role="alert">{error}</p>}
       {netWorth ? (
         <p>
           Net worth: {netWorth.netWorth.toFixed(2)} {netWorth.currency}
         </p>
       ) : (
-        <p>Loading…</p>
+        !error && <p>Loading…</p>
       )}
     </div>
   );
