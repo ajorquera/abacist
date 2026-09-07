@@ -1,3 +1,32 @@
+# apps/server's Netlify Function is OFF by default, everywhere (production,
+# branch-deploy, dev) except PR deploy previews — see ADR-0007
+# (docs/adr/0007-netlify-server-turso-preview-branching.md) and ADR-0006:
+# production must stay backend-free.
+#
+# Netlify's [functions] directory and [[redirects]] keys are NOT
+# context-scoped (confirmed against Netlify's file-based-configuration
+# docs — only [build] properties like `command`, and environment variables,
+# are). So this is enforced the only two ways that actually are
+# context-aware:
+#   1. The default build command below deletes netlify/functions/ before
+#      Netlify's function-bundling step runs, so by default NO Function is
+#      bundled or deployed at all for this context, at any URL.
+#      [context.deploy-preview] overrides this to keep the directory intact
+#      (so the Function *is* bundled) and additively writes the /api/*
+#      rewrite as a generated `_redirects` file (the per-deploy-artifact
+#      equivalent of [[redirects]], since that key isn't context-scoped
+#      either).
+#   2. A second, independent guard: PREVIEW_API_ENABLED is only set to
+#      "true" via [context.deploy-preview.environment] below. The Function
+#      itself (netlify/functions/api.ts) checks this at runtime and refuses
+#      to serve anything if it's ever somehow bundled/reachable outside a
+#      deploy preview — e.g. if step 1's cleanup is ever changed by mistake.
 [build]
-  command = "npm run build --workspace=apps/web"
+  command = "npm run build --workspace=apps/web && rm -rf netlify/functions"
   publish = "apps/web/dist"
+
+[context.deploy-preview]
+  command = "npm run build --workspace=apps/web && echo '/api/*  /.netlify/functions/api/:splat  200' > apps/web/dist/_redirects"
+
+[context.deploy-preview.environment]
+  PREVIEW_API_ENABLED = "true"

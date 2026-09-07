@@ -1,0 +1,87 @@
+name: Migrate Turso seed database
+
+# Keeps the permanent Turso seed/template database (see ADR-0007 —
+# docs/adr/0007-netlify-server-turso-preview-branching.md — and
+# docs/ops/turso-preview-branches.md) in lockstep with every migration
+# merged to master. Every PR preview branches off this DB via
+# `turso db create ... --from-db <seed>` (see turso-preview-branch.yml), so
+# an out-of-date seed schema would make every new preview stale.
+#
+# Degrades gracefully like turso-preview-branch.yml: no-ops with a clear log
+# message if the required Turso secrets aren't configured yet, so this
+# workflow sits harmlessly unused until a human provisions them.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/server/drizzle/**"
+
+jobs:
+  migrate-seed-db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required secrets
+        id: check
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+          TURSO_ORG: ${{ secrets.TURSO_ORG }}
+          TURSO_SEED_DB: ${{ secrets.TURSO_SEED_DB }}
+        run: |
+          missing=()
+          [ -z "$TURSO_API_TOKEN" ] && missing+=(TURSO_API_TOKEN)
+          [ -z "$TURSO_ORG" ] && missing+=(TURSO_ORG)
+          [ -z "$TURSO_SEED_DB" ] && missing+=(TURSO_SEED_DB)
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::notice title=Seed DB migration skipped::Skipping — secret(s) not configured yet: ${missing[*]}. See docs/ops/turso-preview-branches.md for setup steps. This is expected until a human provisions Turso credentials."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.configured == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.configured == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check.outputs.configured == 'true'
+        run: npm ci
+
+      - name: Install Turso CLI
+        if: steps.check.outputs.configured == 'true'
+        run: curl -sSfL https://get.tur.so/install.sh | bash
+
+      - name: Add Turso CLI to PATH
+        if: steps.check.outputs.configured == 'true'
+        run: echo "$HOME/.turso" >> "$GITHUB_PATH"
+
+      - name: Resolve seed database connection details
+        id: seed-db
+        if: steps.check.outputs.configured == 'true'
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          turso org switch "${{ secrets.TURSO_ORG }}"
+
+          # This token is only ever used in-memory for the migrate step below
+          # and is not persisted anywhere.
+          db_url=$(turso db show "${{ secrets.TURSO_SEED_DB }}" --url)
+          db_token=$(turso db tokens create "${{ secrets.TURSO_SEED_DB }}")
+          echo "::add-mask::$db_token"
+
+          echo "db_url=$db_url" >> "$GITHUB_OUTPUT"
+          echo "db_token=$db_token" >> "$GITHUB_OUTPUT"
+
+      - name: Apply migrations to the seed database
+        if: steps.check.outputs.configured == 'true'
+        run: npm run migrate -w apps/server
+        env:
+          DATABASE_URL: ${{ steps.seed-db.outputs.db_url }}
+          TURSO_AUTH_TOKEN: ${{ steps.seed-db.outputs.db_token }}
