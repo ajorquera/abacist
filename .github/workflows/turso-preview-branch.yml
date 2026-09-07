@@ -1,0 +1,148 @@
+name: Turso preview branch lifecycle
+
+# Creates/destroys a per-PR Turso branch database and wires its connection
+# details into that PR's Netlify deploy-preview environment, per ADR-0007
+# (docs/adr/0007-netlify-server-turso-preview-branching.md) and issue #72.
+#
+# Setup is not yet done — see docs/ops/turso-preview-branches.md for the full
+# human checklist. Until the secrets below are added to this repo, every run
+# of this workflow no-ops (see the "Check required secrets" step) and does
+# NOT fail, so it never blocks PRs or breaks other workflows (e.g. test.yml).
+
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+
+jobs:
+  manage-branch-database:
+    runs-on: ubuntu-latest
+    steps:
+      # All the secrets this workflow needs. None of these exist in the repo
+      # yet (see docs/ops/turso-preview-branches.md for how to create/add
+      # them) — until they do, this step marks the run as unconfigured and
+      # every later step is skipped, so the job always succeeds.
+      - name: Check required secrets
+        id: check
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+          TURSO_ORG: ${{ secrets.TURSO_ORG }}
+          TURSO_SEED_DB: ${{ secrets.TURSO_SEED_DB }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          missing=()
+          [ -z "$TURSO_API_TOKEN" ] && missing+=(TURSO_API_TOKEN)
+          [ -z "$TURSO_ORG" ] && missing+=(TURSO_ORG)
+          [ -z "$TURSO_SEED_DB" ] && missing+=(TURSO_SEED_DB)
+          [ -z "$NETLIFY_AUTH_TOKEN" ] && missing+=(NETLIFY_AUTH_TOKEN)
+          [ -z "$NETLIFY_SITE_ID" ] && missing+=(NETLIFY_SITE_ID)
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::notice title=Turso preview branch skipped::Skipping — secret(s) not configured yet: ${missing[*]}. See docs/ops/turso-preview-branches.md for setup steps. This is expected until a human provisions Turso/Netlify credentials."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Turso CLI
+        if: steps.check.outputs.configured == 'true'
+        run: curl -sSfL https://get.tur.so/install.sh | bash
+
+      - name: Add Turso CLI to PATH
+        if: steps.check.outputs.configured == 'true'
+        run: echo "$HOME/.turso" >> "$GITHUB_PATH"
+
+      # --- opened / reopened: create the branch DB and wire it into Netlify ---
+
+      - name: Create PR branch database
+        id: create-db
+        if: |
+          steps.check.outputs.configured == 'true' &&
+          (github.event.action == 'opened' || github.event.action == 'reopened')
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          turso org switch "${{ secrets.TURSO_ORG }}"
+
+          db_name="pr-${{ github.event.pull_request.number }}"
+
+          # Idempotent: a "reopened" PR whose branch DB was never destroyed
+          # (e.g. it was reopened without going through "closed", or this job
+          # is re-run) should not fail trying to recreate an existing DB.
+          if turso db show "$db_name" >/dev/null 2>&1; then
+            echo "Database $db_name already exists, skipping creation."
+          else
+            turso db create "$db_name" --from-db "${{ secrets.TURSO_SEED_DB }}"
+          fi
+
+          db_url=$(turso db show "$db_name" --url)
+          db_token=$(turso db tokens create "$db_name")
+          echo "::add-mask::$db_token"
+
+          echo "db_name=$db_name" >> "$GITHUB_OUTPUT"
+          echo "db_url=$db_url" >> "$GITHUB_OUTPUT"
+          echo "db_token=$db_token" >> "$GITHUB_OUTPUT"
+
+      - name: Point this PR's Netlify preview at the branch database
+        if: |
+          steps.check.outputs.configured == 'true' &&
+          (github.event.action == 'opened' || github.event.action == 'reopened')
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          # The Netlify API scopes a branch-specific env var value by branch
+          # *name*, not PR number, so this must be the PR's head branch.
+          BRANCH: ${{ github.head_ref }}
+          DB_URL: ${{ steps.create-db.outputs.db_url }}
+          DB_TOKEN: ${{ steps.create-db.outputs.db_token }}
+        run: |
+          set -euo pipefail
+
+          account_id=$(
+            curl -sSf \
+              -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+              "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID" \
+            | jq -r '.account_id'
+          )
+
+          # Sets a branch-scoped value override on an *existing* site env var
+          # (Netlify's setEnvVarValue API — PATCH .../env/{key}?site_id=...,
+          # body {context, context_parameter, value}). The env var itself
+          # (DATABASE_URL / TURSO_AUTH_TOKEN) must already exist on the site —
+          # see docs/ops/turso-preview-branches.md's human checklist — this
+          # call only adds/updates this branch's override value for it.
+          set_branch_env_var() {
+            key="$1"
+            value="$2"
+            curl -sSf -X PATCH \
+              -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "$(jq -n --arg branch "$BRANCH" --arg value "$value" \
+                '{context: "branch", context_parameter: $branch, value: $value}')" \
+              "https://api.netlify.com/api/v1/accounts/$account_id/env/$key?site_id=$NETLIFY_SITE_ID" \
+              > /dev/null
+          }
+
+          set_branch_env_var "DATABASE_URL" "$DB_URL"
+          set_branch_env_var "TURSO_AUTH_TOKEN" "$DB_TOKEN"
+
+      # --- closed: tear the branch DB down ---
+      #
+      # No need to also unset the Netlify env var override: Netlify tears down
+      # the whole deploy-preview context for this branch when the PR closes.
+
+      - name: Destroy PR branch database
+        if: steps.check.outputs.configured == 'true' && github.event.action == 'closed'
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          turso org switch "${{ secrets.TURSO_ORG }}"
+
+          db_name="pr-${{ github.event.pull_request.number }}"
+          if turso db show "$db_name" >/dev/null 2>&1; then
+            turso db destroy "$db_name" --yes
+          else
+            echo "Database $db_name does not exist, nothing to destroy."
+          fi

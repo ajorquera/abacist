@@ -1,3 +1,11 @@
 [build]
   command = "npm run build --workspace=apps/web"
   publish = "apps/web/dist"
+
+# Routes apps/server's API to a Netlify standard Function
+# (netlify/functions/api.ts), for PR previews only, per ADR-0007
+# (docs/adr/0007-netlify-server-turso-preview-branching.md).
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
