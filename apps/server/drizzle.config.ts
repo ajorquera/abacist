@@ -6,5 +6,7 @@ export default defineConfig({
   dialect: "turso",
   dbCredentials: {
     url: process.env.DATABASE_URL ?? "file:./data/dev.db",
+    // PROTOTYPE (issue #70): required to run migrations against a Turso branch.
+    authToken: process.env.TURSO_AUTH_TOKEN,
   },
 });

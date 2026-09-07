@@ -1,3 +1,13 @@
 [build]
   command = "npm run build --workspace=apps/web"
   publish = "apps/web/dist"
+
+# PROTOTYPE (issue #70): routes apps/server's Hono app to a Netlify standard
+# Function (netlify/functions/api.ts). Whether Netlify preserves the original
+# "/api/*" path or rewrites it to "/.netlify/functions/api/:splat" inside the
+# function isn't confirmed by any official doc (research in #67) — the
+# function wrapper handles either case defensively.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
