@@ -12,6 +12,6 @@
     "migrate": "npm run migrate -w apps/server"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0" 
   }
 }
