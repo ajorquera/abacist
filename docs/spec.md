@@ -32,7 +32,7 @@ Full term definitions and "avoid" synonyms: [`CONTEXT.md`](../CONTEXT.md).
 ## Tech stack & deploy
 
 - **Frontend**: React + Vite. Routing/forms/data libraries not bundled — picked at build time.
-- **Deploy**: fully local (localhost only), no hosting — financial data never leaves the machine. Revisit only if a future effort adds remote/multi-device access.
+- **Deploy**: fully local (localhost only), no hosting — financial data never leaves the machine. Revisit only if a future effort adds remote/multi-device access. **Exception**: `apps/web`'s static build only is hosted on Netlify (PR previews + a noindex `master` production deploy) — no backend/DB involved; see [ADR-0006](adr/0006-netlify-static-frontend-deploy-exception.md) for scope and tripwire.
 - **Auth**: none. Settled by the local-only deploy — no hosting means no exposed auth surface to protect.
 - **Database**: SQLite/libSQL. No native exact-decimal type, so multi-currency amounts need an app-level integer-minor-units convention (a build-time detail, not decided here). Turso (hosted libSQL) considered and deferred — same format/API, cheap to migrate to later.
 - **Backend/API framework**: left for build time.
