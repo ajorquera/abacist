@@ -76,6 +76,27 @@ describe("Cash", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("currency must be EUR");
   });
 
+  it("falls back to a generic error when the failure response isn't JSON", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url === "/api/accounts" && init?.method === "POST") {
+          return new Response("Internal Server Error", { status: 500 });
+        }
+        return jsonResponse([]);
+      }),
+    );
+
+    render(<Cash />);
+    await screen.findByText("No cash accounts yet.");
+
+    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Bad Account" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add account" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Failed to create account");
+  });
+
   it("records a value snapshot for an existing account", async () => {
     const snapshotCalls: unknown[] = [];
     vi.stubGlobal(
