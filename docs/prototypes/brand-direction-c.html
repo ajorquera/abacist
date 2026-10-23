@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abacist — Brand direction C: Warm personal</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23B5562F'/%3E%3Cellipse cx='16' cy='23' rx='10' ry='4' fill='%23FBF7F0'/%3E%3Cellipse cx='15' cy='15.5' rx='6.5' ry='3' fill='%23FBF7F0'/%3E%3Cellipse cx='16.5' cy='9.5' rx='3.6' ry='2.2' fill='%23FBF7F0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ---- Brand surfaces ---- */
+    --clay-700: #8F3F20;   /* terracotta, pressed/hover */
+    --clay-600: #B5562F;   /* terracotta, primary brand */
+    --clay-100: #F4DFD3;   /* terracotta tint */
+    --sage-700: #4F5F45;   /* sage, text on sage tint */
+    --sage-500: #7D9070;   /* sage, secondary brand */
+    --sage-100: #E3E8DA;   /* sage tint */
+    --ochre-400: #D4A373;  /* warm accent (logo top stone) */
+    --sand-50:  #FBF7F0;   /* app background */
+    --sand-100: #F3EBDD;   /* subtle panel / header */
+    --sand-300: #E2D5BF;   /* borders, dividers */
+
+    /* ---- Neutral financial UI ---- */
+    --surface:  #FFFFFF;   /* cards, tables */
+    --ink-900:  #26221F;   /* primary text, figures */
+    --ink-600:  #5E554D;   /* secondary text */
+    --ink-400:  #958A7F;   /* tertiary / placeholders */
+    --line-200: #ECE6DC;   /* table row rules */
+
+    /* ---- Semantic (numbers only) ---- */
+    --gain:     #2F7D4F;   /* positive change */
+    --gain-bg:  #E4F1E8;
+    --loss:     #B42335;   /* negative balance / loss */
+    --loss-bg:  #F8E3E5;
+
+    --font-brand: "Alegreya Sans", "Gill Sans", "Segoe UI", sans-serif;
+    --font-ui: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--sand-50);
+    color: var(--ink-900);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .num { font-family: var(--font-ui); font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; }
+
+  .page { max-width: 1120px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1, h2, h3 { font-family: var(--font-brand); font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+  section { margin-top: 56px; }
+  .section-label {
+    font-family: var(--font-ui); font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .12em; color: var(--clay-600); margin-bottom: 6px;
+  }
+  section > h2 { font-size: 30px; margin-bottom: 20px; }
+  .muted { color: var(--ink-600); }
+
+  /* Intro */
+  .intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--sand-300); padding-bottom: 24px; }
+  .intro h1 { font-size: 44px; font-weight: 800; }
+  .intro p { margin: 4px 0 0; color: var(--ink-600); max-width: 52ch; }
+
+  /* Logo */
+  .logo-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--sand-300); border-radius: var(--radius); padding: 28px; }
+  .panel.sand { background: var(--sand-100); }
+  .panel.clay { background: var(--clay-600); border-color: var(--clay-600); color: var(--sand-50); }
+  .lockup { display: flex; align-items: center; gap: 14px; }
+  .wordmark { font-family: var(--font-brand); font-weight: 700; letter-spacing: -0.015em; line-height: 1; }
+  .lockups { display: grid; gap: 28px; }
+  .favs { display: flex; gap: 28px; align-items: flex-end; flex-wrap: wrap; }
+  .fav { display: grid; justify-items: center; gap: 8px; font-size: 12px; color: var(--ink-600); }
+  .fav .zoom { image-rendering: pixelated; }
+  .tab-demo { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--sand-300); border-bottom: none; border-radius: 10px 10px 0 0; padding: 8px 14px; font-size: 13px; }
+
+  /* Palette */
+  .swatch-group h3 { font-family: var(--font-ui); font-size: 14px; font-weight: 600; color: var(--ink-600); margin: 18px 0 10px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .sw { border-radius: 12px; overflow: hidden; border: 1px solid var(--sand-300); background: var(--surface); }
+  .sw .chip { height: 72px; }
+  .sw .meta { padding: 8px 10px; font-size: 13px; line-height: 1.35; }
+  .sw code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--ink-900); }
+  .sw .hex { color: var(--ink-600); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
+
+  /* Type */
+  .type-row { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 20px 0; border-top: 1px solid var(--sand-300); align-items: baseline; }
+  .type-row:first-of-type { border-top: none; }
+  .type-row .label { font-size: 13px; color: var(--ink-600); }
+  .type-row .label strong { display: block; color: var(--ink-900); font-weight: 600; }
+  .digits-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .digits-compare div { text-align: right; font-size: 20px; }
+
+  /* App frame */
+  .app { border: 1px solid var(--sand-300); border-radius: 18px; overflow: hidden; background: var(--sand-50); box-shadow: 0 1px 0 rgba(38,34,31,.03), 0 12px 32px -18px rgba(90,60,30,.25); }
+  .app-header { background: var(--sand-100); border-bottom: 1px solid var(--sand-300); display: flex; align-items: center; gap: 28px; padding: 0 20px; height: 60px; }
+  .app-header .lockup .wordmark { font-size: 24px; }
+  .nav { display: flex; gap: 2px; flex: 1; overflow-x: auto; }
+  .nav a { font-size: 15px; font-weight: 500; color: var(--ink-600); text-decoration: none; padding: 8px 11px; border-radius: 8px; white-space: nowrap; }
+  .nav a:hover { background: var(--sand-300); color: var(--ink-900); }
+  .nav a.active { color: var(--clay-700); background: var(--clay-100); font-weight: 600; }
+  .nav .sep { width: 1px; background: var(--sand-300); margin: 8px 6px; }
+  .btn { font-family: var(--font-ui); font-size: 15px; font-weight: 600; border-radius: 10px; padding: 8px 14px; border: 1px solid transparent; cursor: pointer; }
+  .btn-primary { background: var(--clay-600); color: #fff; }
+  .btn-primary:hover { background: var(--clay-700); }
+  .btn-quiet { background: transparent; border-color: var(--sand-300); color: var(--ink-900); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--sage-500); color: #fff; display: grid; place-items: center; font-weight: 600; font-size: 14px; }
+
+  .app-body { padding: 28px; display: grid; grid-template-columns: 1.35fr 1fr; gap: 20px; }
+  .greeting { grid-column: 1 / -1; }
+  .greeting h2 { font-size: 26px; font-weight: 700; }
+  .greeting p { margin: 2px 0 0; color: var(--ink-600); }
+
+  .card { background: var(--surface); border: 1px solid var(--sand-300); border-radius: var(--radius); padding: 22px 24px; }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--ink-600); margin: 0 0 4px; font-family: var(--font-ui); }
+  .nw { font-size: 44px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+  .nw .cur { font-weight: 400; color: var(--ink-600); margin-right: 2px; }
+  .nw .cents { font-size: 26px; color: var(--ink-600); font-weight: 500; }
+  .delta { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; font-weight: 600; padding: 2px 8px; border-radius: 6px; margin-top: 8px; }
+  .delta.up { color: var(--gain); background: var(--gain-bg); }
+  .spark-wrap { margin-top: 18px; }
+  .spark-axis { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-400); margin-top: 4px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 16px; }
+  th { text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-400); padding: 0 0 8px; border-bottom: 1px solid var(--sand-300); }
+  th.r, td.r { text-align: right; }
+  td { padding: 10px 0; border-bottom: 1px solid var(--line-200); vertical-align: middle; }
+  td .sub { display: block; font-size: 13px; color: var(--ink-400); }
+  tr.total td { border-bottom: none; border-top: 1px solid var(--sand-300); font-weight: 700; padding-top: 12px; }
+  .neg { color: var(--loss); }
+  .kind { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 7px; border-radius: 5px; background: var(--sand-100); color: var(--ink-600); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 48px 24px 44px; }
+  .empty h3 { font-size: 26px; margin-top: 18px; }
+  .empty p { color: var(--ink-600); max-width: 44ch; margin: 8px auto 22px; }
+  .empty .actions { display: flex; gap: 10px; justify-content: center; }
+
+  /* Voice */
+  .tagline { font-family: var(--font-brand); font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  .tagline em { font-style: normal; color: var(--clay-600); }
+  .voice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; margin-top: 28px; }
+  .voice .head { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+  .voice .do, .voice .dont { padding: 14px 16px; border-radius: 12px; font-size: 16px; }
+  .voice .do { background: var(--sage-100); color: var(--sage-700); }
+  .voice .do b, .voice .dont b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .voice .dont { background: var(--surface); border: 1px dashed var(--sand-300); color: var(--ink-600); }
+  .voice .dont span { text-decoration: line-through; text-decoration-color: var(--clay-600); }
+
+  footer { margin-top: 64px; font-size: 13px; color: var(--ink-400); }
+</style>
+</head>
+<body>
+
+<!-- Reusable SVG symbols -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Mark: a cairn of three counting stones (calculi). Balance, accumulation, hand-placed. -->
+    <symbol id="mark" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="50" rx="23" ry="8.5" fill="#B5562F"/>
+      <ellipse cx="30.5" cy="33.5" rx="15.5" ry="6.8" fill="#7D9070" transform="rotate(-5 30.5 33.5)"/>
+      <ellipse cx="33.5" cy="20" rx="9.5" ry="5.2" fill="#D4A373" transform="rotate(4 33.5 20)"/>
+    </symbol>
+    <!-- Mono mark for coloured backgrounds -->
+    <symbol id="mark-mono" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="50" rx="23" ry="8.5" fill="currentColor"/>
+      <ellipse cx="30.5" cy="33.5" rx="15.5" ry="6.8" fill="currentColor" transform="rotate(-5 30.5 33.5)"/>
+      <ellipse cx="33.5" cy="20" rx="9.5" ry="5.2" fill="currentColor" transform="rotate(4 33.5 20)"/>
+    </symbol>
+    <!-- Favicon 32 -->
+    <symbol id="fav32" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="7" fill="#B5562F"/>
+      <ellipse cx="16" cy="23" rx="10" ry="4" fill="#FBF7F0"/>
+      <ellipse cx="15" cy="15.5" rx="6.5" ry="3" fill="#FBF7F0"/>
+      <ellipse cx="16.5" cy="9.5" rx="3.6" ry="2.2" fill="#FBF7F0"/>
+    </symbol>
+    <!-- Favicon 16: hand-tuned, chunkier stones, pixel-aligned -->
+    <symbol id="fav16" viewBox="0 0 16 16">
+      <rect width="16" height="16" rx="3.5" fill="#B5562F"/>
+      <ellipse cx="8" cy="11.5" rx="5.5" ry="2.3" fill="#FBF7F0"/>
+      <ellipse cx="7.5" cy="7.3" rx="3.5" ry="1.8" fill="#FBF7F0"/>
+      <ellipse cx="8.3" cy="3.9" rx="2" ry="1.3" fill="#FBF7F0"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="page">
+
+  <div class="intro">
+    <div>
+      <div class="section-label">Brand direction C</div>
+      <h1>Warm personal</h1>
+      <p>A humanist, earthy identity for a private money notebook. Personality lives on the surfaces; the numbers stay plain, neutral and tabular.</p>
+    </div>
+    <div class="lockup">
+      <svg width="52" height="52"><use href="#mark"/></svg>
+      <span class="wordmark" style="font-size:40px">Abacist</span>
+    </div>
+  </div>
+
+  <!-- 1. Logo -->
+  <section>
+    <div class="section-label">01 — Mark &amp; wordmark</div>
+    <h2>A cairn of counting stones</h2>
+    <div class="logo-grid">
+      <div class="lockups">
+        <div class="panel">
+          <div class="lockup">
+            <svg width="88" height="88"><use href="#mark"/></svg>
+            <span class="wordmark" style="font-size:72px">Abacist</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="panel sand">
+            <div class="lockup">
+              <svg width="40" height="40"><use href="#mark"/></svg>
+              <span class="wordmark" style="font-size:32px">Abacist</span>
+            </div>
+          </div>
+          <div class="panel clay">
+            <div class="lockup" style="color:var(--sand-50)">
+              <svg width="40" height="40"><use href="#mark-mono"/></svg>
+              <span class="wordmark" style="font-size:32px">Abacist</span>
+            </div>
+          </div>
+        </div>
+        <p class="muted" style="margin:0;font-size:15px">“Calculus” is Latin for pebble: the first abacists counted with stones. Three stacked stones read as a small cairn — balanced, built up by hand, slightly imperfect. Wordmark is Alegreya Sans Bold, tight tracking, sentence case.</p>
+      </div>
+      <div class="panel">
+        <div class="card-title" style="margin-bottom:18px">Favicon / app icon</div>
+        <div class="favs">
+          <div class="fav"><svg width="16" height="16"><use href="#fav16"/></svg>16 px</div>
+          <div class="fav"><svg width="32" height="32"><use href="#fav32"/></svg>32 px</div>
+          <div class="fav"><svg width="64" height="64"><use href="#fav32"/></svg>64 px</div>
+        </div>
+        <div class="card-title" style="margin:24px 0 10px">16 px, zoomed 4×</div>
+        <div class="favs">
+          <div class="fav"><svg width="64" height="64" viewBox="0 0 16 16" shape-rendering="crispEdges"><use href="#fav16" width="16" height="16"/></svg>16 @4×</div>
+          <div class="fav"><svg width="64" height="64" viewBox="0 0 16 16"><use href="#fav16" width="16" height="16"/></svg>vector</div>
+        </div>
+        <div class="card-title" style="margin:24px 0 10px">In a browser tab</div>
+        <div class="tab-demo"><svg width="16" height="16"><use href="#fav16"/></svg> Dashboard · Abacist</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Palette -->
+  <section>
+    <div class="section-label">02 — Palette (light theme tokens)</div>
+    <h2>Clay, sage, sand — and a quiet ink</h2>
+
+    <div class="swatch-group">
+      <h3>Brand surfaces — header, wordmark, empty states, primary buttons</h3>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#8F3F20"></div><div class="meta"><code>--clay-700</code><br><span class="hex">#8F3F20</span></div></div>
+        <div class="sw"><div class="chip" style="background:#B5562F"></div><div class="meta"><code>--clay-600</code><br><span class="hex">#B5562F</span></div></div>
+        <div class="sw"><div class="chip" style="background:#F4DFD3"></div><div class="meta"><code>--clay-100</code><br><span class="hex">#F4DFD3</span></div></div>
+        <div class="sw"><div class="chip" style="background:#4F5F45"></div><div class="meta"><code>--sage-700</code><br><span class="hex">#4F5F45</span></div></div>
+        <div class="sw"><div class="chip" style="background:#7D9070"></div><div class="meta"><code>--sage-500</code><br><span class="hex">#7D9070</span></div></div>
+        <div class="sw"><div class="chip" style="background:#E3E8DA"></div><div class="meta"><code>--sage-100</code><br><span class="hex">#E3E8DA</span></div></div>
+        <div class="sw"><div class="chip" style="background:#D4A373"></div><div class="meta"><code>--ochre-400</code><br><span class="hex">#D4A373</span></div></div>
+        <div class="sw"><div class="chip" style="background:#FBF7F0"></div><div class="meta"><code>--sand-50</code><br><span class="hex">#FBF7F0</span></div></div>
+        <div class="sw"><div class="chip" style="background:#F3EBDD"></div><div class="meta"><code>--sand-100</code><br><span class="hex">#F3EBDD</span></div></div>
+        <div class="sw"><div class="chip" style="background:#E2D5BF"></div><div class="meta"><code>--sand-300</code><br><span class="hex">#E2D5BF</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group">
+      <h3>Neutral financial UI — cards, tables, figures, charts</h3>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid var(--line-200)"></div><div class="meta"><code>--surface</code><br><span class="hex">#FFFFFF</span></div></div>
+        <div class="sw"><div class="chip" style="background:#26221F"></div><div class="meta"><code>--ink-900</code><br><span class="hex">#26221F</span></div></div>
+        <div class="sw"><div class="chip" style="background:#5E554D"></div><div class="meta"><code>--ink-600</code><br><span class="hex">#5E554D</span></div></div>
+        <div class="sw"><div class="chip" style="background:#958A7F"></div><div class="meta"><code>--ink-400</code><br><span class="hex">#958A7F</span></div></div>
+        <div class="sw"><div class="chip" style="background:#ECE6DC"></div><div class="meta"><code>--line-200</code><br><span class="hex">#ECE6DC</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group">
+      <h3>Semantic — gains &amp; losses (numbers and deltas only, never decoration)</h3>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#2F7D4F"></div><div class="meta"><code>--gain</code><br><span class="hex">#2F7D4F</span></div></div>
+        <div class="sw"><div class="chip" style="background:#E4F1E8"></div><div class="meta"><code>--gain-bg</code><br><span class="hex">#E4F1E8</span></div></div>
+        <div class="sw"><div class="chip" style="background:#B42335"></div><div class="meta"><code>--loss</code><br><span class="hex">#B42335</span></div></div>
+        <div class="sw"><div class="chip" style="background:#F8E3E5"></div><div class="meta"><code>--loss-bg</code><br><span class="hex">#F8E3E5</span></div></div>
+      </div>
+      <p class="muted" style="font-size:14px;margin-top:12px">Note: <code>--loss</code> is pushed toward crimson so it never reads as brand terracotta; <code>--gain</code> is a clear green, deliberately distinct from decorative sage.</p>
+    </div>
+  </section>
+
+  <!-- 3. Type -->
+  <section>
+    <div class="section-label">03 — Type</div>
+    <h2>Two humanists: one with a voice, one that gets out of the way</h2>
+    <div class="panel">
+      <div class="type-row">
+        <div class="label"><strong>Display</strong>Alegreya Sans 700 / 800<br>brand surfaces only</div>
+        <div style="font-family:var(--font-brand);font-weight:700;font-size:48px;line-height:1.1;letter-spacing:-0.02em">Know where you stand.</div>
+      </div>
+      <div class="type-row">
+        <div class="label"><strong>Heading</strong>Alegreya Sans 700, 26px</div>
+        <div style="font-family:var(--font-brand);font-weight:700;font-size:26px">Good evening, Andrés</div>
+      </div>
+      <div class="type-row">
+        <div class="label"><strong>UI / body</strong>Source Sans 3 400–600, 15–16px</div>
+        <div style="font-size:16px;max-width:60ch">Import a statement, check the categories, and Abacist folds it into your net worth. Labels, buttons, tables and forms all use Source Sans 3 — open, calm, very legible at small sizes.</div>
+      </div>
+      <div class="type-row">
+        <div class="label"><strong>Numbers</strong>Source Sans 3 600<br><code style="font-size:12px">tabular-nums lining-nums</code></div>
+        <div>
+          <div class="num" style="font-size:40px;font-weight:600;letter-spacing:-0.02em">€184,710.15</div>
+          <div class="digits-compare" style="margin-top:14px;max-width:420px">
+            <div>
+              <div style="font-size:12px;color:var(--ink-400);text-align:right">tabular (used)</div>
+              <div class="num">€1,111.11</div><div class="num">€8,808.08</div><div class="num neg">−€104,236.75</div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--ink-400);text-align:right">proportional (avoid)</div>
+              <div style="font-variant-numeric:proportional-nums">€1,111.11</div><div style="font-variant-numeric:proportional-nums">€8,808.08</div><div style="font-variant-numeric:proportional-nums" class="neg">−€104,236.75</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. App sample -->
+  <section>
+    <div class="section-label">04 — In the app</div>
+    <h2>Header, dashboard card, accounts</h2>
+
+    <div class="app">
+      <header class="app-header">
+        <div class="lockup" style="gap:10px">
+          <svg width="30" height="30"><use href="#mark"/></svg>
+          <span class="wordmark">Abacist</span>
+        </div>
+        <nav class="nav">
+          <a href="#" class="active">Dashboard</a>
+          <a href="#">Cash</a>
+          <a href="#">Debt</a>
+          <a href="#">Investments</a>
+          <a href="#">Assets</a>
+          <a href="#">Income</a>
+          <a href="#">Expenses</a>
+          <span class="sep"></span>
+          <a href="#">Settings</a>
+        </nav>
+        <button class="btn btn-primary">Import</button>
+        <div class="avatar">A</div>
+      </header>
+
+      <div class="app-body">
+        <div class="greeting">
+          <h2>Good evening, Andrés</h2>
+          <p>Everything up to 22 Oct 2026 is counted. Last import: ING, 2 days ago.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Net worth</div>
+          <div class="nw num"><span class="cur">€</span>184,710<span class="cents">.15</span></div>
+          <div class="delta up num">▲ €2,184.60 · +1.2% this month</div>
+
+          <div class="spark-wrap">
+            <!-- 12 months of net worth; neutral ink line, no brand colour in the data -->
+            <svg viewBox="0 0 400 96" width="100%" height="96" preserveAspectRatio="none" aria-label="Net worth, last 12 months">
+              <line x1="0" y1="95.5" x2="400" y2="95.5" stroke="#ECE6DC"/>
+              <polygon fill="#F3EBDD" points="0,96 0,74 36,70 73,72 109,63 145,60 182,64 218,52 255,47 291,49 327,36 364,30 400,22 400,96"/>
+              <polyline fill="none" stroke="#26221F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"
+                points="0,74 36,70 73,72 109,63 145,60 182,64 218,52 255,47 291,49 327,36 364,30 400,22"/>
+            </svg>
+            <div class="spark-axis num"><span>Nov 2025</span><span>€171.9k → €184.7k</span><span>Oct 2026</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Accounts</div>
+          <table>
+            <thead><tr><th>Account</th><th>Kind</th><th class="r">Balance</th></tr></thead>
+            <tbody>
+              <tr><td>ING Current<span class="sub">ES91 ···· 4410</span></td><td><span class="kind">Cash</span></td><td class="r num">€4,812.30</td></tr>
+              <tr><td>Revolut<span class="sub">EUR wallet</span></td><td><span class="kind">Cash</span></td><td class="r num">€1,206.88</td></tr>
+              <tr><td>eToro portfolio<span class="sub">14 holdings</span></td><td><span class="kind">Investment</span></td><td class="r num">€38,540.12</td></tr>
+              <tr><td>Flat, Valencia<span class="sub">estimated value</span></td><td><span class="kind">Asset</span></td><td class="r num">€245,000.00</td></tr>
+              <tr><td>BBVA mortgage<span class="sub">fixed, 21 yrs left</span></td><td><span class="kind">Debt</span></td><td class="r num neg">−€104,236.75</td></tr>
+              <tr><td>Visa credit card<span class="sub">statement due 5 Nov</span></td><td><span class="kind">Debt</span></td><td class="r num neg">−€612.40</td></tr>
+              <tr class="total"><td colspan="2">Net worth</td><td class="r num">€184,710.15</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Empty state -->
+  <section>
+    <div class="section-label">05 — Empty state</div>
+    <h2>Where the personality is allowed to show</h2>
+    <div class="app">
+      <header class="app-header">
+        <div class="lockup" style="gap:10px">
+          <svg width="30" height="30"><use href="#mark"/></svg>
+          <span class="wordmark">Abacist</span>
+        </div>
+        <nav class="nav">
+          <a href="#">Dashboard</a><a href="#">Cash</a><a href="#">Debt</a>
+          <a href="#" class="active">Investments</a>
+          <a href="#">Assets</a><a href="#">Income</a><a href="#">Expenses</a>
+          <span class="sep"></span><a href="#">Settings</a>
+        </nav>
+        <button class="btn btn-primary">Import</button>
+        <div class="avatar">A</div>
+      </header>
+      <div style="padding:28px">
+        <div class="card empty">
+          <svg width="160" height="104" viewBox="0 0 160 104" aria-hidden="true">
+            <ellipse cx="80" cy="92" rx="62" ry="7" fill="#F3EBDD"/>
+            <ellipse cx="80" cy="80" rx="34" ry="11" fill="#B5562F"/>
+            <ellipse cx="78" cy="56" rx="22" ry="8.5" fill="none" stroke="#7D9070" stroke-width="2" stroke-dasharray="5 5" transform="rotate(-5 78 56)"/>
+            <ellipse cx="82" cy="36" rx="13" ry="6" fill="none" stroke="#D4A373" stroke-width="2" stroke-dasharray="4 4" transform="rotate(4 82 36)"/>
+          </svg>
+          <h3>No investments yet</h3>
+          <p>Bring in a CSV from eToro or Revolut and we’ll sort out the holdings. Or add one by hand — a pension, a fund, a few shares.</p>
+          <div class="actions">
+            <button class="btn btn-primary">Import a CSV</button>
+            <button class="btn btn-quiet">Add by hand</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Voice -->
+  <section>
+    <div class="section-label">06 — Voice</div>
+    <div class="tagline">Know where<br>you <em>stand.</em></div>
+    <p class="muted" style="font-size:18px;margin-top:10px">Plain-spoken, warm, a little dry. Like a friend who's good with money — not a coach, not a bank.</p>
+
+    <div class="voice">
+      <div class="head" style="color:var(--sage-700)">Do</div>
+      <div class="head" style="color:var(--clay-700)">Don't</div>
+
+      <div class="do">Your net worth rose €2,184.60 this month, mostly from eToro.</div>
+      <div class="dont"><span>Woohoo! You're crushing it this month!</span></div>
+
+      <div class="do">No debts recorded. Add a loan or card to see the full picture.</div>
+      <div class="dont"><span>Debt-free?! Lucky you 😎</span></div>
+
+      <div class="do">3 rows have dates we couldn't read. Fix them and import again.</div>
+      <div class="dont"><span>Oopsie! Something went wrong. Please try again later.</span></div>
+    </div>
+  </section>
+
+  <footer>Abacist · brand direction C “Warm personal” · throwaway prototype for comparison</footer>
+</div>
+</body>
+</html>
